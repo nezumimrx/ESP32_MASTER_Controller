@@ -30,6 +30,17 @@ void Button_init()
     pinMode(button_play, INPUT_PULLUP);
     pinMode(button_back, INPUT_PULLUP);
     pinMode(coder_switch, INPUT_PULLUP);
+
+    if (digitalRead(coder_switch) == 1)
+    {
+        coder_mode = false;
+        previous_coder_mode=false;
+    }
+    else
+    {
+        coder_mode = true;
+        previous_coder_mode=true;
+    }
 }
 
 String button_read_add_to_str(String str, int pin)
@@ -236,6 +247,8 @@ void Button_read()
             code_str_raw = "&";
             //播放切换为遥控模式
             Serial.println("切换为遥控模式");
+            voice_trigger=true;
+            voice_type=20;//切换为遥控模式
             previous_coder_mode = coder_mode;
         }
     }
@@ -247,6 +260,8 @@ void Button_read()
             code_str_raw = "&";
             //播放语音切换为编程模式
             Serial.println("切换为编程模式");
+            voice_trigger=true;
+            voice_type=21;//切换为编程模式
             previous_coder_mode = coder_mode;
         }
     }
@@ -461,7 +476,7 @@ void Button_functions()
         else if (button_result == 9 && coder_mode == 1)
         {
             Serial.println("CodingMode RUN/PLAY!");
-            // code_str_raw="&;(2;D02;(2;D01;(3;D;););D04;){(2D03D02)}";//用来测试逻辑的，实际使用要注释掉
+            // code_str_raw="&(2D02(2D01(3D))D04){(2D03D02)}";//用来测试逻辑的，实际使用要注释掉
             // code_str_raw="&W102W203";//用来测试逻辑的，实际使用要注释掉
             code_str_clean = remove_delimiters(code_str_raw);
             int check_condition_type1_result = check_condition('{', '}', code_str_clean); // 0-没有type1的条件判断符号{}, 1-正确（详细说明看checkcondition功能，2语法错误

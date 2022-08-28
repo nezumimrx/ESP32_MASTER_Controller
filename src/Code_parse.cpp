@@ -92,26 +92,100 @@ void code_parse(String str)
         j = looptimes;
         break;
       }
-      if (receive_condition_type1 == 1 && instant_stop == 0)
+      if (receive_condition_type1 == 1 && has_condition_type1 == 1 && instant_stop == 0)
       {
         Serial.println("proceed condition type1");
         receive_condition_type1 = 0; //这里接收到的标志位要在code_parse之前清空是为了防止套娃
+        //
+        send_data_now('W',0);//先让小车停下来说话
+        voice_trigger=true;
+        voice_type=15;//第一种环境条件触发
+        delay(2000);//小车停下1.5s处理语音及表情
+        //
         code_parse(code_str_condition_type1);
         Serial.println("condition type1 complete");
+      }else if(receive_condition_type1 == 1 && has_condition_type1 == 0 && instant_stop == 0 && (has_condition_type2!=0||has_condition_type3!=0)){
+        Serial.println("no condition1 commands");
+        receive_condition_type1 = 0;
+        //
+        send_data_now('W',0);//先让小车停下来说话
+        voice_trigger=true;
+        voice_type=18;//触发了条件但是没有录入对应的条件指令
+        delay(2000);//小车停下1.5s处理语音及表情
+        //
+      }else if(receive_condition_type1 == 1 && has_condition_type1 == 0 && instant_stop == 0 && has_condition_type2==0 && has_condition_type3==0){
+        Serial.println("no condition1 commands");
+        receive_condition_type1 = 0;
+        //
+        send_data_now('W',0);//先让小车停下来说话
+        voice_trigger=true;
+        voice_type=19;//触发了条件但是没有录入任何条件指令
+        delay(2000);//小车停下1.5s处理语音及表情
+        //
       }
-      else if (receive_condition_type2 == 1 && instant_stop == 0)
+
+      if (receive_condition_type2 == 1 && has_condition_type2 == 1 && instant_stop == 0)
       {
         Serial.println("proceed conditiontype2");
         receive_condition_type2 = 0;
+        //
+        send_data_now('W',0);//先让小车停下来说话
+        voice_trigger=true;
+        voice_type=16;//第一种环境条件触发
+        delay(2000);//小车停下1.5s处理语音及表情
+        //
         code_parse(code_str_condition_type2);
         Serial.println("condition type2 complete");
+      }else if(receive_condition_type2 == 1 && has_condition_type2 == 0 && instant_stop == 0 && (has_condition_type1!=0||has_condition_type3!=0)){
+        Serial.println("no condition2 commands");
+        receive_condition_type2 = 0;
+        //
+        send_data_now('W',0);//先让小车停下来说话
+        voice_trigger=true;
+        voice_type=18;//触发了条件但是没有录入对应的条件指令
+        delay(2000);//小车停下1.5s处理语音及表情
+        //
+      }else if(receive_condition_type2 == 1 && has_condition_type2 == 0 && instant_stop == 0 && has_condition_type1==0 && has_condition_type3==0){
+        Serial.println("no condition1 commands");
+        receive_condition_type2 = 0;
+        //
+        send_data_now('W',0);//先让小车停下来说话
+        voice_trigger=true;
+        voice_type=19;//触发了条件但是没有录入任何条件指令
+        delay(2000);//小车停下1.5s处理语音及表情
+        //
       }
-      else if (receive_condition_type3 == 1 && instant_stop == 0)
+
+      if (receive_condition_type3 == 1 && has_condition_type3 == 1 && instant_stop == 0)
       {
         Serial.println("proceed conditiontype3");
         receive_condition_type3 = 0;
+        //
+        send_data_now('W',0);//先让小车停下来说话
+        voice_trigger=true;
+        voice_type=17;//第一种环境条件触发
+        delay(2000);//小车停下1.5s处理语音及表情
+        //
         code_parse(code_str_condition_type3);
         Serial.println("condition type3 complete");
+      }else if(receive_condition_type3 == 1 && has_condition_type3 == 0 && instant_stop == 0 && (has_condition_type1!=0||has_condition_type2!=0)){
+        Serial.println("no condition3 commands");
+        receive_condition_type3 = 0;
+        //
+        send_data_now('W',0);//先让小车停下来说话
+        voice_trigger=true;
+        voice_type=18;//触发了条件但是没有录入对应的条件指令
+        delay(2000);//小车停下1.5s处理语音及表情
+        //
+      }else if(receive_condition_type3 == 1 && has_condition_type3 == 0 && instant_stop == 0 && has_condition_type1==0 && has_condition_type2==0){
+        Serial.println("no condition1 commands");
+        receive_condition_type3 = 0;
+        //
+        send_data_now('W',0);//先让小车停下来说话
+        voice_trigger=true;
+        voice_type=19;//触发了条件但是没有录入任何条件指令
+        delay(2000);//小车停下1.5s处理语音及表情
+        //
       }
 
       if (ch == '(')

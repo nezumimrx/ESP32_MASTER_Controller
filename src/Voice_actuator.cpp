@@ -19,6 +19,14 @@ void send_voice_messages(){
         voice_type=12;//循环结束命令
         voice_type=13;//程序运行完毕
         voice_type=14;//yoho
+        voice_type=15;//第一种环境条件触发
+        voice_type=16;//第二种环境条件触发
+        voice_type=17;//第三种环境条件触发
+        voice_type=18;//遇到条件卡，但是没有录入任何条件命令
+        voice_type=19;//遇到条件卡，但是录入了其他条件卡的命令，此条件卡不触发
+        voice_type=20;//切换为遥控模式
+        voice_type=21;//切换为编程模式
+
         */
         send_data_now('v',voice_type);
         voice_type=0;
