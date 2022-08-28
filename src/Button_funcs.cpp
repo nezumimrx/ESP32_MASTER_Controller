@@ -138,7 +138,10 @@ int check_condition(char condition_symbol_start, char condition_symbol_end, Stri
 
     if (positive_bracket == -1 && negative_bracket == -1)
     {
-        Serial.println("no condition whatsoever.");
+        
+        if(condition_symbol_start=='{'){has_condition_type1 = false;Serial.println("no condition {whatsoever}.");}
+        else if(condition_symbol_start=='['){has_condition_type2=false;Serial.println("no condition [whatsoever].");}
+        else if(condition_symbol_start=='<'){has_condition_type3=false;Serial.println("no condition <whatsoever>.");}
         return 0; // no condition symbol '{''}'
     }
     else if ((positive_bracket >= 0 && negative_bracket == -1) || (positive_bracket == -1 && negative_bracket >= 0))

@@ -54,6 +54,12 @@ void OnDataRecv(const uint8_t *mac, const uint8_t *incomingData, int len)
     if(*received_data.x=='C'&&received_data.y==1&&start_cypher==1){
         receive_condition_type1=true;
         Serial.println("receive_condition1 occured");
+    }else if(*received_data.x=='C'&&received_data.y==2&&start_cypher==1){
+        receive_condition_type2=true;
+        Serial.println("receive_condition2 occured");
+    }else if(*received_data.x=='C'&&received_data.y==3&&start_cypher==1){
+        receive_condition_type3=true;
+        Serial.println("receive_condition3 occured");   
     }
 }
 
