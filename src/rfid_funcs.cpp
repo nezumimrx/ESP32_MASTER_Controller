@@ -65,6 +65,7 @@ void rfid_scan_card()//write_or_read切换为1的时候是写入
         }
         else
         {
+            Serial.println("");
             Serial.println(what_rfid_block_to_write);
             if(what_rfid_block_to_write==1)write_block_ntag213(data_blocks.wheel_forward, 0x06);//写入卡片改这里
             else if(what_rfid_block_to_write==2)write_block_ntag213(data_blocks.wheel_backward, 0x06);//写入卡片改这里
@@ -77,6 +78,7 @@ void rfid_scan_card()//write_or_read切换为1的时候是写入
             else if(what_rfid_block_to_write==12)write_block_ntag213(data_blocks.num_2, 0x06);//写入卡片改这里
             else if(what_rfid_block_to_write==13)write_block_ntag213(data_blocks.num_3, 0x06);//写入卡片改这里
             else if(what_rfid_block_to_write==14)write_block_ntag213(data_blocks.num_4, 0x06);//写入卡片改这里
+            
             else if(what_rfid_block_to_write==15)write_block_ntag213(data_blocks.num_5, 0x06);//写入卡片改这里
             else if(what_rfid_block_to_write==16)write_block_ntag213(data_blocks.num_6, 0x06);//写入卡片改这里
             else if(what_rfid_block_to_write==17)write_block_ntag213(data_blocks.num_7, 0x06);//写入卡片改这里
