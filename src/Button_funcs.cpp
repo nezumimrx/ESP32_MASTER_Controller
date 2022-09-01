@@ -503,7 +503,9 @@ void Button_functions()
                 // play voice run and play emo_ragerthat!
                 voice_trigger = true;
                 voice_type = 6; //运行、启动、开始执行编程指令
-                delay(2000);
+                delay(1000);
+                send_data_now('s',1);//速度设置为低速 
+                delay(1000);
                 //
                 instant_stop = 0;
                 start_cypher = 1;

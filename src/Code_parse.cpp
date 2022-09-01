@@ -5,15 +5,15 @@
 String looptimes_strFormat = ""; //这个looptimes_strFormat由于放在下面开空间的话会出现存不进去数据的情况，所以要放到全局变量中
 
 void process_wheel(String str, int i)
-{ // W0-stop W1-forward W2-BACK W3-LEFT W4-RIGHT W5-MECLEFT W6-MECRIGHT 
-  // W001 W101 W201 01表示时间
+{ // L0-stop L1-forward L2-BACK L3-LEFT L4-RIGHT L5-MECLEFT L6-MECRIGHT 
+  // L001 L101 L201 01表示时间
   int move_condition=str.substring(i+1,i+2).toInt();
   char next_next_char = str[i + 2];
   //第一种情况，如果后面带上数字卡片表示时间了，例如前进卡片W1 加上数字卡片02 行程了W102的情况，那么判断next_next_char是0成立的话，就执行下面的运算
   if(next_next_char=='0'){
     int delay_time=str.substring(i+2,i+4).toInt();
     send_data_now('W',move_condition);
-    delay(1000*delay_time);
+    delay(500*delay_time);
     send_data_now('W',0);
     delay(200);
     i=i+3;
@@ -21,7 +21,7 @@ void process_wheel(String str, int i)
   //如果后面没有时间，只是单纯的W1\W2\W3\W4\W5\W6的话，停顿1秒
   else if(next_next_char!='0'){
     send_data_now('W', move_condition);
-    delay(1000);
+    delay(500);
     send_data_now('W', 0);
     delay(200);
     i++;
