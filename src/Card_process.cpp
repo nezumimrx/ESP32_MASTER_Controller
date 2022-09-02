@@ -126,26 +126,32 @@ void cards_wheel(byte block_buffer[18])
 void cards_condition(byte block_buffer[18])
 {
     if (block_buffer[1] == 0xA0){
+        send_data_now('F',10);//五角星条件
         code_str_raw += ";{"; //第一种条件提示符 {}
         voice_type = 9; //录入了条件指令卡前半部分
     }
     else if (block_buffer[1] == 0xA1){
+        send_data_now('F',11);//五角星条件结束
         code_str_raw += ";}"; // 第一种条件提示符 {}
         voice_type = 10;
     }
     else if (block_buffer[1] == 0xA2){
+        send_data_now('F',12);//星星条件
         code_str_raw += ";["; // 第二种条件提示符 []
         voice_type=9;
     }
     else if (block_buffer[1] == 0xA3){
+        send_data_now('F',13);//星星条件结束
         voice_type=10;
         code_str_raw += ";]"; // 第二种条件提示符 []
     }
     else if (block_buffer[1] == 0xA4){
+        send_data_now('F',14);//小花条件
         voice_type=9;
         code_str_raw += ";<"; // 第三种条件提示符 <>
     }
     else if (block_buffer[1] == 0xA5){
+        send_data_now('F',15);//小花条件结束
         voice_type=10;
         code_str_raw += ";>"; // 第三种条件提示符 <>
     }
@@ -219,6 +225,7 @@ void cards_numbers(byte block_buffer[18])
 void cards_loop_end(byte block_buffer[18])
 {
     if (block_buffer[1] == 0x01){
+        send_data_now('F',9);//9-循环结束symbol
         voice_type=12;
         voice_trigger = true;
         code_str_raw += ";)";
@@ -231,10 +238,14 @@ void cards_loop(byte block_buffer[18])
 {
     if (block_buffer[1] == 0x00)
         code_str_raw += ";(0";
-    else if (block_buffer[1] == 0x02)
+    else if (block_buffer[1] == 0x02){
         code_str_raw += ";(2";
-    else if (block_buffer[1] == 0x03)
+        send_data_now('F',7);//7-循环2次
+    } 
+    else if (block_buffer[1] == 0x03){
         code_str_raw += ";(3";
+        send_data_now('F',8);//8-循环3次
+    }     
     else if (block_buffer[1] == 0x04)
         code_str_raw += ";(4";
     else if (block_buffer[1] == 0x05)

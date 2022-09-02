@@ -35,11 +35,13 @@ void Button_init()
     {
         coder_mode = false;
         previous_coder_mode=false;
+        send_data_now('f',0);//切换到默认脸
     }
     else
     {
         coder_mode = true;
         previous_coder_mode=true;
+        send_data_now('f',1);//切换到编程脸
     }
 }
 
@@ -328,10 +330,11 @@ void Button_read()
     button_readStr = "";
     code_button_readStr = "";
 }
-void motion_record(String new_item)
+void motion_record(String new_item, int motion_type)
 {
     if (code_str_raw_item_counter <= code_str_raw_item_max)
-    {
+    {   
+        send_data_now('F',motion_type);//发送给小车显示记录了什么动作指令
         Serial.println("record");
         code_str_raw += new_item;
         voice_trigger = true;
@@ -362,7 +365,7 @@ void Button_functions()
         else if (button_result == 1 && coder_mode == 1)
         {
             Serial.println("Add forward command");
-            motion_record(";W1");
+            motion_record(";W1",1);
             button_result = 0;
         }
         // backward
@@ -377,7 +380,7 @@ void Button_functions()
         else if (button_result == 2 && coder_mode == 1)
         {
             Serial.println("Add backward command");
-            motion_record(";W2");
+            motion_record(";W2",2);
             button_result = 0;
         }
         // left_turn
@@ -392,7 +395,7 @@ void Button_functions()
         else if (button_result == 3 && coder_mode == 1)
         {
             Serial.println("Add turnleft command");
-            motion_record(";W3");
+            motion_record(";W3",3);
             button_result = 0;
         }
         // right_turn
@@ -407,7 +410,7 @@ void Button_functions()
         else if (button_result == 4 && coder_mode == 1)
         {
             Serial.println("Add turnright command");
-            motion_record(";W4");
+            motion_record(";W4",4);
             button_result = 0;
         }
         // mec_move_left
@@ -422,7 +425,7 @@ void Button_functions()
         else if (button_result == 5 && coder_mode == 1)
         {
             Serial.println("Add mec_move_left command");
-            motion_record(";W5");
+            motion_record(";W5",5);
             button_result = 0;
         }
         // mec_move_right
@@ -437,7 +440,7 @@ void Button_functions()
         else if (button_result == 6 && coder_mode == 1)
         {
             Serial.println("Add mec_move_right command");
-            motion_record(";W6");
+            motion_record(";W6",6);
             button_result = 0;
         }
         // stop

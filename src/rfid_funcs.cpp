@@ -87,7 +87,10 @@ void rfid_scan_card()//write_or_read切换为1的时候是写入
 
             else if(what_rfid_block_to_write==20)write_block_ntag213(data_blocks.loop, 0x06);//写入卡片改这里
             else if(what_rfid_block_to_write==21)write_block_ntag213(data_blocks.loop_end, 0x06);//写入卡片改这里
-            
+            else if(what_rfid_block_to_write==22)write_block_ntag213(data_blocks.loop2, 0x06);//写入卡片改这里
+            else if(what_rfid_block_to_write==23)write_block_ntag213(data_blocks.loop3, 0x06);//写入卡片改这里
+
+
             else if(what_rfid_block_to_write==30)write_block_ntag213(data_blocks.conditionA_leftbracket, 0x06);//写入卡片改这里
             else if(what_rfid_block_to_write==31)write_block_ntag213(data_blocks.conditionA_rightbracket, 0x06);//写入卡片改这里
             else if(what_rfid_block_to_write==32)write_block_ntag213(data_blocks.conditionB_leftbracket, 0x06);//写入卡片改这里
