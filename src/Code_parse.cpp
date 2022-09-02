@@ -70,7 +70,7 @@ void code_parse(String str)
         looptimes_strFormat += (current_ASCII_number - '0');
         // Serial.print("looptimes_strFormat: ");Serial.println(looptimes_strFormat); //读取数据后发现如果looptimes_strFormat不是全局变量，会有+=添加不进去的情况
       }
-      else if (current_ASCII_number >= 65)
+      else if (current_ASCII_number >= 65||current_ASCII_number<=47)
       { //读到A-z的字符，结束读取数字部分
         break;
       }
