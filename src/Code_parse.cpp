@@ -76,7 +76,6 @@ void code_parse(String str)
       }
     }
     looptimes = looptimes_strFormat.toInt(); //这是真正循环了多少次
-
     if (looptimes == 0)
       looptimes = 2; //当格式为&(0DD)的时候表示用户只放了loop卡片但是没有加任何数字卡片，组合成&(02DD)这种格式，所以默认循环2次
   }
@@ -215,6 +214,7 @@ void code_parse(String str)
         if (indexEndSignal > 0)
         {
           String nextLevelLoop = loopString.substring(0, indexEndSignal);
+          Serial.println(nextLevelLoop);
           code_parse(nextLevelLoop);
           i = i + indexEndSignal;
         }
