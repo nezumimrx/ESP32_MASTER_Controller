@@ -4,7 +4,7 @@
 hw_timer_t *test_connecting_timer = NULL;
 void IRAM_ATTR TimerEvent()
 {
-  send_data_now('0',0);
+  
   ledstatus=!ledstatus;
 }
 

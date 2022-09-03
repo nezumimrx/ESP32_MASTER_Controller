@@ -43,6 +43,8 @@ boolean voice_trigger=false;
 int voice_type=0;
 
 int button_result = 0;
+
+int test_connection_counter=0;
 void RFID_TASK(void *parameters)
 {
   for (;;)
@@ -55,6 +57,11 @@ void RFID_TASK(void *parameters)
 void BUTTON_TASK(void *parameters){
   for(;;){
     Button_read();
+    test_connection_counter++;
+    if(test_connection_counter==10){
+      test_connection_counter=0;
+      send_data_now('0',0);
+    }
     vTaskDelay(100/portTICK_PERIOD_MS);
   }
 }
@@ -113,6 +120,7 @@ void loop()
   }
   else
   {
+    code_str_raw = "&";
     timer_switch(true);
     digitalWrite(connection_indicator,ledstatus);
   }
