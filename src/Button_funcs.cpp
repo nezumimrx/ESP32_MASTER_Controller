@@ -34,14 +34,14 @@ void Button_init()
     if (digitalRead(coder_switch) == 1)
     {
         coder_mode = false;
-        previous_coder_mode=false;
-        send_data_now('f',0);//切换到默认脸
+        previous_coder_mode = false;
+        send_data_now('f', 0); //切换到默认脸
     }
     else
     {
         coder_mode = true;
-        previous_coder_mode=true;
-        send_data_now('f',1);//切换到编程脸
+        previous_coder_mode = true;
+        send_data_now('f', 1); //切换到编程脸
     }
 }
 
@@ -61,13 +61,16 @@ String delete_last_item()
     return deleted_str;
 }
 
-void count_code_str_raw(){
-    int temp_counter=0;
-    for(int i=0;i<(code_str_raw.length());i++){
+void count_code_str_raw()
+{
+    int temp_counter = 0;
+    for (int i = 0; i < (code_str_raw.length()); i++)
+    {
         char c = code_str_raw.charAt(i);
-        if(c==';')temp_counter++;
+        if (c == ';')
+            temp_counter++;
     }
-    code_str_raw_item_counter=temp_counter;
+    code_str_raw_item_counter = temp_counter;
 }
 
 String remove_delimiters(String str)
@@ -151,10 +154,22 @@ int check_condition(char condition_symbol_start, char condition_symbol_end, Stri
 
     if (positive_bracket == -1 && negative_bracket == -1)
     {
-        
-        if(condition_symbol_start=='{'){has_condition_type1 = false;Serial.println("no condition {whatsoever}.");}
-        else if(condition_symbol_start=='['){has_condition_type2=false;Serial.println("no condition [whatsoever].");}
-        else if(condition_symbol_start=='<'){has_condition_type3=false;Serial.println("no condition <whatsoever>.");}
+
+        if (condition_symbol_start == '{')
+        {
+            has_condition_type1 = false;
+            Serial.println("no condition {whatsoever}.");
+        }
+        else if (condition_symbol_start == '[')
+        {
+            has_condition_type2 = false;
+            Serial.println("no condition [whatsoever].");
+        }
+        else if (condition_symbol_start == '<')
+        {
+            has_condition_type3 = false;
+            Serial.println("no condition <whatsoever>.");
+        }
         return 0; // no condition symbol '{''}'
     }
     else if ((positive_bracket >= 0 && negative_bracket == -1) || (positive_bracket == -1 && negative_bracket >= 0))
@@ -249,9 +264,20 @@ void Button_read()
             code_str_raw = "&";
             //播放切换为遥控模式
             Serial.println("切换为遥控模式");
-            voice_trigger=true;
-            voice_type=20;//切换为遥控模式
+            voice_trigger = true;
+            voice_type = 20; //切换为遥控模式
             previous_coder_mode = coder_mode;
+            // 切换模式的同时紧急停止
+            Serial.println("CodingMode Emergent STOP!");
+            instant_stop = 1;
+            start_cypher = 0;
+            button_result = 0;
+            voice_trigger = true;
+            voice_type = 3; //紧急停止
+            // play voice emergent stop and play emo_stop
+            voice_trigger = true;
+            voice_type = 3; //紧急停止
+            //
         }
     }
     else
@@ -262,8 +288,8 @@ void Button_read()
             code_str_raw = "&";
             //播放语音切换为编程模式
             Serial.println("切换为编程模式");
-            voice_trigger=true;
-            voice_type=21;//切换为编程模式
+            voice_trigger = true;
+            voice_type = 21; //切换为编程模式
             previous_coder_mode = coder_mode;
         }
     }
@@ -333,8 +359,8 @@ void Button_read()
 void motion_record(String new_item, int motion_type)
 {
     if (code_str_raw_item_counter <= code_str_raw_item_max)
-    {   
-        send_data_now('F',motion_type);//发送给小车显示记录了什么动作指令
+    {
+        send_data_now('F', motion_type); //发送给小车显示记录了什么动作指令
         Serial.println("record");
         code_str_raw += new_item;
         voice_trigger = true;
@@ -358,89 +384,89 @@ void Button_functions()
         { //按键按下且不在编程模式
             Serial.println("Button result 1 forward");
             send_data_now('W', 1);
-            voice_trigger=true;
-            voice_type=14;
+            voice_trigger = true;
+            voice_type = 14;
             button_result = 0;
         }
         else if (button_result == 1 && coder_mode == 1)
         {
             Serial.println("Add forward command");
-            motion_record(";W1",1);
+            motion_record(";W1", 1);
             button_result = 0;
         }
         // backward
         if (button_result == 2 && coder_mode == 0)
         {
             Serial.println("Button result 2 backward");
-            voice_trigger=true;
-            voice_type=14;
+            voice_trigger = true;
+            voice_type = 14;
             send_data_now('W', 2);
             button_result = 0;
         }
         else if (button_result == 2 && coder_mode == 1)
         {
             Serial.println("Add backward command");
-            motion_record(";W2",2);
+            motion_record(";W2", 2);
             button_result = 0;
         }
         // left_turn
         if (button_result == 3 && coder_mode == 0)
         {
             Serial.println("Button result 3 turn_left");
-            voice_trigger=true;
-            voice_type=14;
+            voice_trigger = true;
+            voice_type = 14;
             send_data_now('W', 3);
             button_result = 0;
         }
         else if (button_result == 3 && coder_mode == 1)
         {
             Serial.println("Add turnleft command");
-            motion_record(";W3",3);
+            motion_record(";W3", 3);
             button_result = 0;
         }
         // right_turn
         if (button_result == 4 && coder_mode == 0)
         {
             Serial.println("Button result 4 turn_right");
-            voice_trigger=true;
-            voice_type=14;
+            voice_trigger = true;
+            voice_type = 14;
             send_data_now('W', 4);
             button_result = 0;
         }
         else if (button_result == 4 && coder_mode == 1)
         {
             Serial.println("Add turnright command");
-            motion_record(";W4",4);
+            motion_record(";W4", 4);
             button_result = 0;
         }
         // mec_move_left
         if (button_result == 5 && coder_mode == 0)
         {
             Serial.println("Button result 5 mec_move_left");
-            voice_trigger=true;
-            voice_type=14;
+            voice_trigger = true;
+            voice_type = 14;
             send_data_now('W', 5);
             button_result = 0;
         }
         else if (button_result == 5 && coder_mode == 1)
         {
             Serial.println("Add mec_move_left command");
-            motion_record(";W5",5);
+            motion_record(";W5", 5);
             button_result = 0;
         }
         // mec_move_right
         if (button_result == 6 && coder_mode == 0)
         {
             Serial.println("Button result 6 mec_move_right");
-            voice_trigger=true;
-            voice_type=14;
+            voice_trigger = true;
+            voice_type = 14;
             send_data_now('W', 6);
             button_result = 0;
         }
         else if (button_result == 6 && coder_mode == 1)
         {
             Serial.println("Add mec_move_right command");
-            motion_record(";W6",6);
+            motion_record(";W6", 6);
             button_result = 0;
         }
         // stop
@@ -454,16 +480,23 @@ void Button_functions()
         // emergent stop
         if (button_result == 8 && coder_mode == 1)
         {
-            Serial.println("CodingMode Emergent STOP!");
-            instant_stop = 1;
-            start_cypher = 0;
-            button_result = 0;
-            voice_trigger = true;
-            voice_type = 3; //紧急停止
-            // play voice emergent stop and play emo_stop
-            voice_trigger = true;
-            voice_type = 3; //紧急停止
-            //
+            if (if_local_process_code == false)
+            {
+                Serial.println("CodingMode Emergent STOP!");
+                instant_stop = 1;
+                start_cypher = 0;
+                button_result = 0;
+                // play voice emergent stop and play emo_stop
+                voice_trigger = true;
+                voice_type = 3; //紧急停止
+                //
+            }
+            else if (if_local_process_code == true)
+            {
+                Serial.println("CodingMode Emergent STOP!");
+                send_data_now('R', 0); //紧急停止编程
+                button_result = 0;
+            }
         }
         else if (button_result == 7 && coder_mode == 1)
         {
@@ -478,66 +511,74 @@ void Button_functions()
         }
         else if (button_result == 9 && coder_mode == 1)
         {
-            Serial.println("CodingMode RUN/PLAY!");
-            // code_str_raw="&(2D02(2D01(3D))D04){(2D03D02)}";//用来测试逻辑的，实际使用要注释掉
-            // code_str_raw="&W102W203";//用来测试逻辑的，实际使用要注释掉
-            code_str_clean = remove_delimiters(code_str_raw);
-            int check_condition_type1_result = check_condition('{', '}', code_str_clean); // 0-没有type1的条件判断符号{}, 1-正确（详细说明看checkcondition功能，2语法错误
-            int check_condition_type2_result = check_condition('[', ']', code_str_clean); // 0-没有type2的条件判断符号[], 1-正确（详细说明看checkcondition功能，2语法错误
-            int check_condition_type3_result = check_condition('<', '>', code_str_clean); // 0-没有type3的条件判断符号||, 1-正确（详细说明看checkcondition功能，2语法错误
-            int legal_result = 0;
-            legal_result = legal_test_simple(code_str_clean);
-            if (check_condition_type1_result == 1)
-                legal_test_simple(code_str_condition_type1);
-            else if (check_condition_type1_result == 2)
-                legal_result = 0; //语法错误
-            if (check_condition_type2_result == 1)
-                legal_test_simple(code_str_condition_type2);
-            else if (check_condition_type2_result == 2)
-                legal_result = 0; //语法错误
-            if (check_condition_type3_result == 1)
-                legal_test_simple(code_str_condition_type3);
-            else if (check_condition_type3_result == 2)
-                legal_result = 0; //语法错误
-            if (legal_result == 1)
+            if (if_local_process_code == false)
             {
-                Serial.println("legal code");
-                
-                // play voice run and play emo_ragerthat!
-                voice_trigger = true;
-                voice_type = 6; //运行、启动、开始执行编程指令
-                delay(1000);
-                send_data_now('s',1);//速度设置为低速 
-                delay(1000);
-                //
-                instant_stop = 0;
-                start_cypher = 1;
+                Serial.println("CodingMode RUN/PLAY!");
+                // code_str_raw="&(2D02(2D01(3D))D04){(2D03D02)}";//用来测试逻辑的，实际使用要注释掉
+                // code_str_raw="&W102W203";//用来测试逻辑的，实际使用要注释掉
+                code_str_clean = remove_delimiters(code_str_raw);
+                int check_condition_type1_result = check_condition('{', '}', code_str_clean); // 0-没有type1的条件判断符号{}, 1-正确（详细说明看checkcondition功能，2语法错误
+                int check_condition_type2_result = check_condition('[', ']', code_str_clean); // 0-没有type2的条件判断符号[], 1-正确（详细说明看checkcondition功能，2语法错误
+                int check_condition_type3_result = check_condition('<', '>', code_str_clean); // 0-没有type3的条件判断符号||, 1-正确（详细说明看checkcondition功能，2语法错误
+                int legal_result = 0;
+                legal_result = legal_test_simple(code_str_clean);
+                if (check_condition_type1_result == 1)
+                    legal_test_simple(code_str_condition_type1);
+                else if (check_condition_type1_result == 2)
+                    legal_result = 0; //语法错误
+                if (check_condition_type2_result == 1)
+                    legal_test_simple(code_str_condition_type2);
+                else if (check_condition_type2_result == 2)
+                    legal_result = 0; //语法错误
+                if (check_condition_type3_result == 1)
+                    legal_test_simple(code_str_condition_type3);
+                else if (check_condition_type3_result == 2)
+                    legal_result = 0; //语法错误
+                if (legal_result == 1)
+                {
+                    Serial.println("legal code");
+                    // play voice run and play emo_ragerthat!
+                    voice_trigger = true;
+                    voice_type = 6; //运行、启动、开始执行编程指令
+                    delay(1000);
+                    send_data_now('s', 1); //速度设置为低速
+                    delay(1000);
+                    //
+                    instant_stop = 0;
+                    start_cypher = 1;
+                }
+                else if (legal_result == 0)
+                {
+                    Serial.println("illegal code");
+                    // play voice illegal_code and play emo_question mark!
+                    voice_trigger = true;
+                    voice_type = 7; //程序有错误
+                                    //
+                }
+                else if (legal_result == 3)
+                {
+                    Serial.println("empty code");
+                    // play voice empty_code and play emo_silence!
+                    voice_trigger = true;
+                    voice_type = 8; //没有录入程序指令
+                    //
+                }
+                else if (legal_result == 2)
+                {
+                    Serial.println("oversize code");
+                    // play voice oversize_code and play emo 一团乱!
+                    voice_trigger = true;
+                    voice_type = 2; //超出上限
+                                    //
+                }
+                button_result = 0;
             }
-            else if (legal_result == 0)
-            {
-                Serial.println("illegal code");
-                // play voice illegal_code and play emo_question mark!
-                voice_trigger = true;
-                voice_type = 7; //程序有错误
-                //
+            else if (if_local_process_code == true)
+            { //机器人本地分析数据
+                Serial.println("CodingMode RUN/PLAY!");
+                send_data_now('R', 1); //开始执行编程指令
+                button_result = 0;
             }
-            else if (legal_result == 3)
-            {
-                Serial.println("empty code");
-                // play voice empty_code and play emo_silence!
-                voice_trigger = true;
-                voice_type = 8; //没有录入程序指令
-                //
-            }
-            else if (legal_result == 2)
-            {
-                Serial.println("oversize code");
-                // play voice oversize_code and play emo 一团乱!
-                voice_trigger = true;
-                voice_type = 2; //超出上限
-                                //
-            }
-            button_result = 0;
         }
         else if (button_result == 10 && coder_mode == 1)
         {

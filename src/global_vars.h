@@ -27,3 +27,5 @@ extern boolean read_new_card;
 
 extern boolean voice_trigger;
 extern int voice_type;
+extern boolean if_local_process_code;
+
