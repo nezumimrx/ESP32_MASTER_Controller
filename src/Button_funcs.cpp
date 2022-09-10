@@ -356,8 +356,8 @@ void motion_record(String new_item, int motion_type)
         send_data_now('F', motion_type); //发送给小车显示记录了什么动作指令
         Serial.println("record");
         code_str_raw += new_item;
-        voice_trigger = true;
-        voice_type = 1; //动作指令卡片
+        //voice_trigger = true;
+        //voice_type = 1; //动作指令卡片
         code_str_raw_item_counter++;
         Serial.println(code_str_raw);
     }
@@ -579,9 +579,10 @@ void Button_functions()
             code_str_raw = delete_last_item();
             code_str_raw_item_counter--;
             button_result = 0;
+            send_data_now('F',0);
             // play voice oversize_code and play emo_exclamation mark
-            voice_trigger = true;
-            voice_type = 5; //撤销指令
+            //voice_trigger = true;
+            //voice_type = 5; //撤销指令
             //
         }
     }
