@@ -268,16 +268,9 @@ void Button_read()
             voice_type = 20; //切换为遥控模式
             previous_coder_mode = coder_mode;
             // 切换模式的同时紧急停止
-            Serial.println("CodingMode Emergent STOP!");
             instant_stop = 1;
             start_cypher = 0;
             button_result = 0;
-            voice_trigger = true;
-            voice_type = 3; //紧急停止
-            // play voice emergent stop and play emo_stop
-            voice_trigger = true;
-            voice_type = 3; //紧急停止
-            //
         }
     }
     else
