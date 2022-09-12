@@ -17,6 +17,7 @@ boolean connected_with_slave = false; //global variable 上位机判断有没有
 boolean ledstatus=false;//global variable 为什么设置成全局变量？因为要在main中用来闪灯的同时在timer中要0.5秒改变一次状态
 
 boolean if_local_process_code=true;//如果此模式打开，则遥控器不再处理代码，只是发送指令给机器人，机器人自己记录并分析处理代码
+
 boolean coder_mode=false;//是否为编程模式，如果不是则是遥控模式
 String code_str_raw="&";
 int code_str_raw_item_counter=0;
@@ -47,6 +48,7 @@ int voice_type=0;
 int button_result = 0;
 
 int test_connection_counter=0;
+int mode_switch_condition=-1;//初始默认为遥控模式,
 void RFID_TASK(void *parameters)
 {
   for (;;)

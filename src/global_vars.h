@@ -29,3 +29,6 @@ extern boolean voice_trigger;
 extern int voice_type;
 extern boolean if_local_process_code;
 
+extern int mode_switch_condition;//0-遥控模式, 1 -编程闯关模式，2-编程积分模式
+
+

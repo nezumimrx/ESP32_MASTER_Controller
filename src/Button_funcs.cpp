@@ -15,7 +15,9 @@
 
 String button_previous = "";      //用来过滤多余按键检测
 String code_button_previous = ""; //编程功能的按键
-boolean previous_coder_mode;
+// boolean previous_coder_mode;
+int previous_mode_switch_condition = 0; //记录上一次循环的模式状态，这个只在if_local_process_code==false才有用，也就是说只有遥控器处理编程指令时才有用，机器人本地处理时没用
+boolean previous_coder_switch_read;     //记录上一次循环的按键状态
 void Button_init()
 {
     pinMode(15, OUTPUT); //连接指示灯
@@ -30,19 +32,19 @@ void Button_init()
     pinMode(button_play, INPUT_PULLUP);
     pinMode(button_back, INPUT_PULLUP);
     pinMode(coder_switch, INPUT_PULLUP);
-
-    if (digitalRead(coder_switch) == 1)
-    {
-        coder_mode = false;
-        previous_coder_mode = false;
-        send_data_now('f', 0); //切换到默认脸
-    }
-    else
-    {
-        coder_mode = true;
-        previous_coder_mode = true;
-        send_data_now('f', 1); //切换到编程脸
-    }
+    //这个是在切换模式开关为拨档开关时才用，因为有可能开机就是高电平，那样就要告诉机器人切换为编程脸，但是统计次数的按键不用，因为初始一定为遥控模式
+    // if (digitalRead(coder_switch) == 1)
+    // {
+    //     coder_mode = false;
+    //     previous_coder_mode = false;
+    //     send_data_now('f', 0); //切换到默认脸
+    // }
+    // else
+    // {
+    //     coder_mode = true;
+    //     previous_coder_mode = true;
+    //     send_data_now('f', 1); //切换到编程脸
+    // }
 }
 
 String button_read_add_to_str(String str, int pin)
@@ -256,36 +258,83 @@ void Button_read()
     code_button_readStr = button_read_add_to_str(code_button_readStr, button_stop);
     code_button_readStr = button_read_add_to_str(code_button_readStr, button_play);
     code_button_readStr = button_read_add_to_str(code_button_readStr, button_back);
-    if (digitalRead(coder_switch) == 1)
+    boolean current_coder_switch_read = digitalRead(coder_switch);
+    if (current_coder_switch_read == 1 && previous_coder_switch_read == 0)
     {
-        coder_mode = false;
-        if (previous_coder_mode == true)
-        {
-            code_str_raw = "&";
-            //播放切换为遥控模式
-            Serial.println("切换为遥控模式");
-            voice_trigger = true;
-            voice_type = 20; //切换为遥控模式
-            previous_coder_mode = coder_mode;
-            // 切换模式的同时紧急停止
-            instant_stop = 1;
-            start_cypher = 0;
-            button_result = 0;
+        if (mode_switch_condition >= 0 && if_local_process_code == true)
+        {                          //如果下位机自己处理编程指令的话,只需要发送这个M,1就可以了
+            send_data_now('M', 1); //由于mode_switch初始是-1，因为不知道为啥esp32启动时这个引脚会自动被拉高一次，所以是为了抵消这次拉高初始值设为1，
         }
+        mode_switch_condition++;
+        if (mode_switch_condition == 3)
+            mode_switch_condition = 0;
+        else if (mode_switch_condition < 0)
+            mode_switch_condition = 0;
+        Serial.print("mode switch: ");
+        Serial.println(mode_switch_condition);
     }
-    else
-    {
-        coder_mode = true;
-        if (previous_coder_mode == false)
-        {
-            code_str_raw = "&";
-            //播放语音切换为编程模式
-            Serial.println("切换为编程模式");
-            voice_trigger = true;
-            voice_type = 21; //切换为编程模式
-            previous_coder_mode = coder_mode;
-        }
-    }
+    previous_coder_switch_read = current_coder_switch_read;
+
+    //应该不会再出现由遥控器解析代码的清空了，所以下面就注释掉了，遥控器只是发送命令，其他都由机器人处理
+    // if(previous_mode_switch_condition!=mode_switch_condition&&if_local_process_code==false){
+    //     if(mode_switch_condition==0){
+    //         //切换为遥控模式
+    //         Serial.println("切换为遥控模式");
+    //         code_str_raw="&";
+    //         voice_trigger=true;
+    //         voice_type=20;//
+    //         instant_stop=1;
+    //         start_cypher=0;
+    //         previous_mode_switch_condition=0;
+    //     }else if(mode_switch_condition==1){
+    //         //切换为编程闯关模式
+    //         Serial.println("切换为编程闯关模式");
+    //         coder_mode=1;
+    //         code_str_raw="&";
+    //         voice_trigger=true;
+    //         voice_type=21;
+    //         previous_mode_switch_condition=1;
+    //     }else if(mode_switch_condition==2){
+    //         //切换为编程积分模式
+    //         Serial.println("切换为编程积分模式");
+    //         coder_mode=1;
+    //         code_str_raw="&";
+    //         voice_trigger=true;
+    //         voice_type=21;
+    //         previous_mode_switch_condition=2;
+    //     }
+    // }
+
+    // if (digitalRead(coder_switch) == 1)
+    // {
+    //     coder_mode = false;
+    //     if (previous_coder_mode == true)
+    //     {
+    //         code_str_raw = "&";
+    //         //播放切换为遥控模式
+    //         Serial.println("切换为遥控模式");
+    //         voice_trigger = true;
+    //         voice_type = 20; //切换为遥控模式
+    //         previous_coder_mode = coder_mode;
+    //         // 切换模式的同时紧急停止
+    //         instant_stop = 1;
+    //         start_cypher = 0;
+    //         button_result = 0;
+    //     }
+    // }
+    // else
+    // {
+    //     coder_mode = true;
+    //     if (previous_coder_mode == false)
+    //     {
+    //         code_str_raw = "&";
+    //         //播放语音切换为编程模式
+    //         Serial.println("切换为编程模式");
+    //         voice_trigger = true;
+    //         voice_type = 21; //切换为编程模式
+    //         previous_coder_mode = coder_mode;
+    //     }
+    // }
 
     if (button_previous == "111111" && button_readStr == "011111")
     {
@@ -356,8 +405,8 @@ void motion_record(String new_item, int motion_type)
         send_data_now('F', motion_type); //发送给小车显示记录了什么动作指令
         Serial.println("record");
         code_str_raw += new_item;
-        //voice_trigger = true;
-        //voice_type = 1; //动作指令卡片
+        // voice_trigger = true;
+        // voice_type = 1; //动作指令卡片
         code_str_raw_item_counter++;
         Serial.println(code_str_raw);
     }
@@ -373,97 +422,97 @@ void Button_functions()
     if (button_result != 0)
     {
         // forward
-        if (button_result == 1 && coder_mode == 0)
+        if (button_result == 1 && if_local_process_code==true)
         { //按键按下且不在编程模式
             Serial.println("Button result 1 forward");
             send_data_now('W', 1);
-            voice_trigger = true;
-            voice_type = 14;
+            // voice_trigger = true;
+            // voice_type = 14;
             button_result = 0;
         }
-        else if (button_result == 1 && coder_mode == 1)
+        else if (button_result == 1 && if_local_process_code==false)
         {
             Serial.println("Add forward command");
             motion_record(";W1", 1);
             button_result = 0;
         }
         // backward
-        if (button_result == 2 && coder_mode == 0)
+        if (button_result == 2 && if_local_process_code==true)
         {
             Serial.println("Button result 2 backward");
-            voice_trigger = true;
-            voice_type = 14;
+            // voice_trigger = true;
+            // voice_type = 14;
             send_data_now('W', 2);
             button_result = 0;
         }
-        else if (button_result == 2 && coder_mode == 1)
+        else if (button_result == 2 && if_local_process_code==false)
         {
             Serial.println("Add backward command");
             motion_record(";W2", 2);
             button_result = 0;
         }
         // left_turn
-        if (button_result == 3 && coder_mode == 0)
+        if (button_result == 3 && if_local_process_code==true)
         {
             Serial.println("Button result 3 turn_left");
-            voice_trigger = true;
-            voice_type = 14;
+            // voice_trigger = true;
+            // voice_type = 14;
             send_data_now('W', 3);
             button_result = 0;
         }
-        else if (button_result == 3 && coder_mode == 1)
+        else if (button_result == 3 && if_local_process_code==false)
         {
             Serial.println("Add turnleft command");
             motion_record(";W3", 3);
             button_result = 0;
         }
         // right_turn
-        if (button_result == 4 && coder_mode == 0)
+        if (button_result == 4 && if_local_process_code==true)
         {
             Serial.println("Button result 4 turn_right");
-            voice_trigger = true;
-            voice_type = 14;
+            // voice_trigger = true;
+            // voice_type = 14;
             send_data_now('W', 4);
             button_result = 0;
         }
-        else if (button_result == 4 && coder_mode == 1)
+        else if (button_result == 4 && if_local_process_code==false)
         {
             Serial.println("Add turnright command");
             motion_record(";W4", 4);
             button_result = 0;
         }
         // mec_move_left
-        if (button_result == 5 && coder_mode == 0)
+        if (button_result == 5 && if_local_process_code==true)
         {
             Serial.println("Button result 5 mec_move_left");
-            voice_trigger = true;
-            voice_type = 14;
+            // voice_trigger = true;
+            // voice_type = 14;
             send_data_now('W', 5);
             button_result = 0;
         }
-        else if (button_result == 5 && coder_mode == 1)
+        else if (button_result == 5 && if_local_process_code == false)
         {
             Serial.println("Add mec_move_left command");
             motion_record(";W5", 5);
             button_result = 0;
         }
         // mec_move_right
-        if (button_result == 6 && coder_mode == 0)
+        if (button_result == 6 && if_local_process_code==1)
         {
             Serial.println("Button result 6 mec_move_right");
-            voice_trigger = true;
-            voice_type = 14;
+            // voice_trigger = true;
+            // voice_type = 14;
             send_data_now('W', 6);
             button_result = 0;
         }
-        else if (button_result == 6 && coder_mode == 1)
+        else if (button_result == 6 && if_local_process_code==false)
         {
             Serial.println("Add mec_move_right command");
             motion_record(";W6", 6);
             button_result = 0;
         }
         // stop
-        if (button_result == 99 && coder_mode == 0)
+        if (button_result == 99 )
         { //松开按键了发送stop
             Serial.println("stop the wheel");
             send_data_now('W', 0);
@@ -471,38 +520,29 @@ void Button_functions()
         }
 
         // emergent stop
-        if (button_result == 8 && coder_mode == 1)
+        if (button_result == 8)
         {
-            if (if_local_process_code == false)
-            {
-                Serial.println("CodingMode Emergent STOP!");
-                instant_stop = 1;
-                start_cypher = 0;
-                button_result = 0;
-                // play voice emergent stop and play emo_stop
-                voice_trigger = true;
-                voice_type = 3; //紧急停止
-                //
-            }
-            else if (if_local_process_code == true)
-            {
-                Serial.println("CodingMode Emergent STOP!");
-                send_data_now('R', 0); //紧急停止编程
-                button_result = 0;
-            }
+            Serial.println("CodingMode Emergent STOP!");
+            send_data_now('R', 0); //紧急停止编程
+            instant_stop = 1;
+            start_cypher = 0;
+            button_result = 0;
+            // play voice emergent stop and play emo_stop
+            // voice_trigger = true;
+            // voice_type = 3; //紧急停止
+                            //
         }
-        else if (button_result == 7 && coder_mode == 1)
+        else if (button_result == 7)
         {
             Serial.println("CodingMode CLEAR!");
             code_str_raw = "&";
             code_str_clean = "";
             button_result = 0;
             // play voice code clear and play emo_clear
-            voice_trigger = true;
-            voice_type = 4; //清除指令
+            send_data_now('F',20);
             //
         }
-        else if (button_result == 9 && coder_mode == 1)
+        else if (button_result == 9)
         {
             if (if_local_process_code == false)
             {
@@ -573,16 +613,16 @@ void Button_functions()
                 button_result = 0;
             }
         }
-        else if (button_result == 10 && coder_mode == 1)
+        else if (button_result == 10)
         {
             Serial.println("Codingmode BACK!");
             code_str_raw = delete_last_item();
             code_str_raw_item_counter--;
             button_result = 0;
-            send_data_now('F',0);
+            send_data_now('F', 19);
             // play voice oversize_code and play emo_exclamation mark
-            //voice_trigger = true;
-            //voice_type = 5; //撤销指令
+            // voice_trigger = true;
+            // voice_type = 5; //撤销指令
             //
         }
     }

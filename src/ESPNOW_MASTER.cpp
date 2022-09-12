@@ -26,19 +26,19 @@ esp_now_peer_info_t peerInfo;
 void onDataSent(const uint8_t *mac_addr, esp_now_send_status_t sendStatus)
 {
     char macStr[18]; //显示为FF:FF:FF:FF:FF:FF
-    snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
-             mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
-    Serial.print(macStr);
-    Serial.print("send status: ");
+    //snprintf(macStr, sizeof(macStr), "%02x:%02x:%02x:%02x:%02x:%02x",
+    //         mac_addr[0], mac_addr[1], mac_addr[2], mac_addr[3], mac_addr[4], mac_addr[5]);
+    //Serial.print(macStr);
+    //Serial.print("send status: ");
     if (sendStatus == 0)
     {
         connected_with_slave=true;
-        Serial.println("send sucess!");
+        //Serial.println("send sucess!");
     }
     else
     {
         connected_with_slave=false;
-        Serial.println("fail");
+        //Serial.println("fail");
     }
 }
 
