@@ -49,6 +49,8 @@ int button_result = 0;
 
 int test_connection_counter=0;
 int mode_switch_condition=-1;//初始默认为遥控模式,
+
+boolean button_start_up=0;//由于部分按键初始化时候是拉高的，所以要放到loop的第一个循环才开启button task
 void RFID_TASK(void *parameters)
 {
   for (;;)
@@ -93,8 +95,6 @@ void setup()
   espnow_master_init();
   xTaskCreate(RFID_TASK, "RFID_TASK", 5000, NULL, 1, NULL);
   Button_init();
-  xTaskCreate(BUTTON_TASK, "BUTTON_TASK", 5000, NULL, 1, NULL);
-  xTaskCreate(BUTTON_PROCESS_TASK, "BUTTON_PROCESS_TASK", 5000, NULL, 1, NULL);
   xTaskCreate(VOICE_SEND_TASK,"VOICE_SEND",5000,NULL,2,NULL);
   timer_init(3,500000);//3号timer，500,000us，500ms，0.5s
   timer_switch(true);
@@ -102,9 +102,15 @@ void setup()
 
 void loop()
 {
+  if(button_start_up==0){
+    xTaskCreate(BUTTON_TASK, "BUTTON_TASK", 5000, NULL, 1, NULL);
+    xTaskCreate(BUTTON_PROCESS_TASK, "BUTTON_PROCESS_TASK", 5000, NULL, 1, NULL);
+    button_start_up=1;
+  }
 
   if (connected_with_slave == true)
   {
+    
     timer_switch(false);
     digitalWrite(connection_indicator,HIGH);
     card_process(rfid_block_buffer);

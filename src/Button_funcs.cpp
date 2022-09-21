@@ -12,12 +12,15 @@
 #define button_play 32
 #define button_back 33
 #define coder_switch 13
+#define volume_pin 12
 
 String button_previous = "";      //用来过滤多余按键检测
 String code_button_previous = ""; //编程功能的按键
 // boolean previous_coder_mode;
 int previous_mode_switch_condition = 0; //记录上一次循环的模式状态，这个只在if_local_process_code==false才有用，也就是说只有遥控器处理编程指令时才有用，机器人本地处理时没用
 boolean previous_coder_switch_read;     //记录上一次循环的按键状态
+boolean previous_volume_read;
+int previous_volume_condition=10; //previous_volume_condition初始是10，按一次+10，30最大
 void Button_init()
 {
     pinMode(15, OUTPUT); //连接指示灯
@@ -32,6 +35,7 @@ void Button_init()
     pinMode(button_play, INPUT_PULLUP);
     pinMode(button_back, INPUT_PULLUP);
     pinMode(coder_switch, INPUT_PULLUP);
+    pinMode(volume_pin, INPUT_PULLUP);
     //这个是在切换模式开关为拨档开关时才用，因为有可能开机就是高电平，那样就要告诉机器人切换为编程脸，但是统计次数的按键不用，因为初始一定为遥控模式
     // if (digitalRead(coder_switch) == 1)
     // {
@@ -259,6 +263,8 @@ void Button_read()
     code_button_readStr = button_read_add_to_str(code_button_readStr, button_play);
     code_button_readStr = button_read_add_to_str(code_button_readStr, button_back);
     boolean current_coder_switch_read = digitalRead(coder_switch);
+    boolean current_volume_read=digitalRead(volume_pin);
+
     if (current_coder_switch_read == 1 && previous_coder_switch_read == 0)
     {
         if (mode_switch_condition >= 0 && if_local_process_code == true)
@@ -275,66 +281,13 @@ void Button_read()
     }
     previous_coder_switch_read = current_coder_switch_read;
 
-    //应该不会再出现由遥控器解析代码的清空了，所以下面就注释掉了，遥控器只是发送命令，其他都由机器人处理
-    // if(previous_mode_switch_condition!=mode_switch_condition&&if_local_process_code==false){
-    //     if(mode_switch_condition==0){
-    //         //切换为遥控模式
-    //         Serial.println("切换为遥控模式");
-    //         code_str_raw="&";
-    //         voice_trigger=true;
-    //         voice_type=20;//
-    //         instant_stop=1;
-    //         start_cypher=0;
-    //         previous_mode_switch_condition=0;
-    //     }else if(mode_switch_condition==1){
-    //         //切换为编程闯关模式
-    //         Serial.println("切换为编程闯关模式");
-    //         coder_mode=1;
-    //         code_str_raw="&";
-    //         voice_trigger=true;
-    //         voice_type=21;
-    //         previous_mode_switch_condition=1;
-    //     }else if(mode_switch_condition==2){
-    //         //切换为编程积分模式
-    //         Serial.println("切换为编程积分模式");
-    //         coder_mode=1;
-    //         code_str_raw="&";
-    //         voice_trigger=true;
-    //         voice_type=21;
-    //         previous_mode_switch_condition=2;
-    //     }
-    // }
+    if(current_volume_read == 1&&previous_volume_read==0){
+        Serial.println("volume Pressed!");
+        send_data_now('V',1);
+    }
+    previous_volume_read=current_volume_read;
 
-    // if (digitalRead(coder_switch) == 1)
-    // {
-    //     coder_mode = false;
-    //     if (previous_coder_mode == true)
-    //     {
-    //         code_str_raw = "&";
-    //         //播放切换为遥控模式
-    //         Serial.println("切换为遥控模式");
-    //         voice_trigger = true;
-    //         voice_type = 20; //切换为遥控模式
-    //         previous_coder_mode = coder_mode;
-    //         // 切换模式的同时紧急停止
-    //         instant_stop = 1;
-    //         start_cypher = 0;
-    //         button_result = 0;
-    //     }
-    // }
-    // else
-    // {
-    //     coder_mode = true;
-    //     if (previous_coder_mode == false)
-    //     {
-    //         code_str_raw = "&";
-    //         //播放语音切换为编程模式
-    //         Serial.println("切换为编程模式");
-    //         voice_trigger = true;
-    //         voice_type = 21; //切换为编程模式
-    //         previous_coder_mode = coder_mode;
-    //     }
-    // }
+
 
     if (button_previous == "111111" && button_readStr == "011111")
     {
